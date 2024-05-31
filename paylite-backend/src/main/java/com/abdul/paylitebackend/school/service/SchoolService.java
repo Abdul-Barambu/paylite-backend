@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -38,6 +39,10 @@ public class SchoolService implements UserDetailsService {
         schoolRepository.save(schools);
 
         return ResponseEntity.ok(registrationSuccessful("success", "Your registration has been successfully"));
+    }
+
+    public List<Schools> getAllSchools(){
+       return schoolRepository.findAll();
     }
 
 

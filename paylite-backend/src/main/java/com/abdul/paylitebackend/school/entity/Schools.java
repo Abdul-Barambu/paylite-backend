@@ -31,6 +31,10 @@ public class Schools implements UserDetails {
             nullable = false
     )
     private String password;
+    @Column(
+            nullable = false
+    )
+    private Double balance;
 
 //    nullable fields
     private String address;
@@ -49,10 +53,11 @@ public class Schools implements UserDetails {
     private SchoolRole schoolRole;
 
 
-    public Schools(String name, String email, String password, SchoolRole schoolRole) {
+    public Schools(String name, String email, String password, Double balance, SchoolRole schoolRole) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.balance = balance;
         this.schoolRole = schoolRole;
     }
 

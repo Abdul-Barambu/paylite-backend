@@ -9,4 +9,5 @@ public class SchoolDto {
     private String name;
     private String email;
     private String password;
+    private Double balance;
 }
