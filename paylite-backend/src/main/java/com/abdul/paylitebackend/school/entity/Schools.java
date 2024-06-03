@@ -17,7 +17,7 @@ public class Schools implements UserDetails {
 
     @Id
     @SequenceGenerator(name = "school_sequence", sequenceName = "school_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "school_sequence")
     private long id;
     @Column(
             nullable = false
@@ -31,10 +31,6 @@ public class Schools implements UserDetails {
             nullable = false
     )
     private String password;
-    @Column(
-            nullable = false
-    )
-    private Double balance;
 
 //    nullable fields
     private String address;
@@ -53,11 +49,10 @@ public class Schools implements UserDetails {
     private SchoolRole schoolRole;
 
 
-    public Schools(String name, String email, String password, Double balance, SchoolRole schoolRole) {
+    public Schools(String name, String email, String password, SchoolRole schoolRole) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.balance = balance;
         this.schoolRole = schoolRole;
     }
 

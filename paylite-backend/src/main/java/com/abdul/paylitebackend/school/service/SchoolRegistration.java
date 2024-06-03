@@ -30,7 +30,6 @@ public class SchoolRegistration {
                         schoolDto.getName(),
                         schoolDto.getEmail(),
                         schoolDto.getPassword(),
-                        schoolDto.getBalance(),
                         SchoolRole.SCHOOL
                 )
         );
