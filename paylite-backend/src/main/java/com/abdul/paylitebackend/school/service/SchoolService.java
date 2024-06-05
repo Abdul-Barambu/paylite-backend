@@ -1,8 +1,10 @@
 package com.abdul.paylitebackend.school.service;
 
+import com.abdul.paylitebackend.school.dto.UpdateSchoolDto;
 import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.entity.Wallet;
 import com.abdul.paylitebackend.school.repository.SchoolRepository;
+import com.abdul.paylitebackend.school.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class SchoolService implements UserDetailsService {
     private final SchoolRepository schoolRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final WalletService walletService;
+    private final WalletRepository walletRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -55,6 +59,61 @@ public class SchoolService implements UserDetailsService {
         return schoolRepository.findAll();
     }
 
+    public ResponseEntity<Object> updateSchool(Long id, UpdateSchoolDto updateSchoolDto) {
+        Optional<Schools> schools = schoolRepository.findById(id);
+
+        if (schools.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(emailExist("Error", "School Not Found"));
+        }
+
+        Schools school = schools.get();
+        if (updateSchoolDto.getAddress() != null) {
+            school.setAddress(updateSchoolDto.getAddress());
+        }
+        if (updateSchoolDto.getPhoneNumber() != null) {
+            school.setPhoneNumber(updateSchoolDto.getPhoneNumber());
+        }
+        if (updateSchoolDto.getState() != null) {
+            school.setState(updateSchoolDto.getState());
+        }
+        if (updateSchoolDto.getBankName() != null) {
+            school.setBankName(updateSchoolDto.getBankName());
+        }
+        if (updateSchoolDto.getAccountName() != null) {
+            school.setAccountName(updateSchoolDto.getAccountName());
+        }
+        if (updateSchoolDto.getAccountNumber() != null) {
+            school.setAccountNumber(updateSchoolDto.getAccountNumber());
+        }
+        if (updateSchoolDto.getLogo() != null) {
+            school.setLogo(updateSchoolDto.getLogo());
+        }
+        if (updateSchoolDto.getDocuments() != null) {
+            school.setDocuments(updateSchoolDto.getDocuments());
+        }
+
+        schoolRepository.save(school);
+        return ResponseEntity.ok(registrationSuccessful("Success", "School updated successfully"));
+    }
+
+
+    public ResponseEntity<Object> deleteSchool(Long id) {
+        Optional<Schools> schools = schoolRepository.findById(id);
+
+        if (schools.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(emailExist("Error", "School Not Found"));
+        }
+
+        Schools school = schools.get();
+
+//        delete wallet table with instance id from school table
+        Optional<Wallet> wallet = walletRepository.findById(school.getId());
+        wallet.ifPresent(walletRepository::delete);
+
+        schoolRepository.delete(school);
+        return ResponseEntity.ok(registrationSuccessful("Success", "School updated successfully"));
+
+    }
 
     //    Response
     public Map<String, Object> emailExist(String status, String message) {

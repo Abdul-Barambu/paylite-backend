@@ -1,6 +1,7 @@
 package com.abdul.paylitebackend.school.controller;
 
 import com.abdul.paylitebackend.school.dto.SchoolDto;
+import com.abdul.paylitebackend.school.dto.UpdateSchoolDto;
 import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.service.SchoolRegistration;
 import com.abdul.paylitebackend.school.service.SchoolService;
@@ -28,4 +29,15 @@ public class SchoolController {
     public List<Schools> getAllSchools(){
         return schoolService.getAllSchools();
     }
+
+    @PutMapping(path = "/updateSchool/{id}")
+    public ResponseEntity updateSchool(@PathVariable Long id, @RequestBody UpdateSchoolDto updateSchoolDto){
+        return schoolService.updateSchool(id, updateSchoolDto);
+    }
+
+    @DeleteMapping(path = "/deleteSchool/{id}")
+    public ResponseEntity deleteSchool(@PathVariable Long id){
+        return schoolService.deleteSchool(id);
+    }
+
 }
