@@ -23,8 +23,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers("/api/register/schools/**")
-                        .permitAll())
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/register/schools/**").permitAll()
+                        .requestMatchers("/api/payments/**").permitAll())
                 .authenticationProvider(daoAuthenticationProvider());
 
         return http.build();
