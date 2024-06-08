@@ -25,7 +25,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/register/schools/**").permitAll()
-                        .requestMatchers("/api/payments/**").permitAll())
+                        .requestMatchers("/api/payments/**").permitAll()
+                        .requestMatchers("/api/verify-payment").permitAll()
+                        .requestMatchers("/api/payer/**").permitAll())
                 .authenticationProvider(daoAuthenticationProvider());
 
         return http.build();

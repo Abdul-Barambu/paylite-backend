@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -19,6 +20,10 @@ public class PayerService {
         payerRepository.save(payerDetails);
 
         return ResponseEntity.ok(registrationSuccessful("success", "Your payment has been initialize"));
+    }
+
+    public List<PayerDetails> getAllPays(){
+        return payerRepository.findAll();
     }
 
     public Map<String, Object> registrationSuccessful(String status, String message) {
