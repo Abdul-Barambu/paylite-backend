@@ -1,5 +1,7 @@
 package com.abdul.paylitebackend.flutterwave;
 
+import com.abdul.paylitebackend.payer.Dto.PayerDetailsDto;
+import com.abdul.paylitebackend.payer.service.PayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +14,12 @@ import java.util.Map;
 public class FlutterWaveController {
 
     private final FlutterWaveService flutterwaveService;
+    private final PayService payService;
 
     @PostMapping("/initiate/{schoolId}")
-    public ResponseEntity<Object> initiatePayment(@PathVariable Long schoolId, @RequestParam Double amount) {
-        return flutterwaveService.initiatePayment(schoolId, amount);
+    public ResponseEntity<Object> initiatePayment(@PathVariable Long schoolId, @RequestBody PayerDetailsDto payerDetailsDto) {
+        payService.makePayment(payerDetailsDto);
+        return flutterwaveService.initiatePayment(schoolId, payerDetailsDto);
     }
 
     @PostMapping("/callback")

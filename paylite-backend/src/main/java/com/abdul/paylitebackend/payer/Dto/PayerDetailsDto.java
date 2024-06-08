@@ -1,4 +1,4 @@
-package com.abdul.paylitebackend.payer;
+package com.abdul.paylitebackend.payer.Dto;
 
 import lombok.Data;
 

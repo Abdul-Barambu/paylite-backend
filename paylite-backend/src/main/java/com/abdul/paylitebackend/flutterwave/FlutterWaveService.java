@@ -1,6 +1,7 @@
 package com.abdul.paylitebackend.flutterwave;
 
 import com.abdul.paylitebackend.config.FlutterWaveConfig;
+import com.abdul.paylitebackend.payer.Dto.PayerDetailsDto;
 import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.entity.Wallet;
 import com.abdul.paylitebackend.school.repository.SchoolRepository;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class FlutterWaveService {
     private final SchoolRepository schoolRepository;
     private final WalletRepository walletRepository;
 
-    public ResponseEntity<Object> initiatePayment(Long schoolId, Double amount) {
+    public ResponseEntity<Object> initiatePayment(Long schoolId, PayerDetailsDto payerDetailsDto) {
         Schools school = schoolRepository.findById(schoolId).orElse(null);
         if (school == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse("Error", "School not found"));
@@ -34,11 +34,11 @@ public class FlutterWaveService {
         MediaType mediaType = MediaType.parse("application/json");
         String json = "{"
                 + "\"tx_ref\":\"" + System.currentTimeMillis() + "\","
-                + "\"amount\":\"" + amount + "\","
+                + "\"amount\":\"" + payerDetailsDto.getAmount() + "\","
                 + "\"currency\":\"NGN\","
-                + "\"redirect_url\":\"http://yourdomain.com/callback\","
+                + "\"redirect_url\":\"http://localhost:3000/callback\","
                 + "\"payment_options\":\"card\","
-                + "\"customer\":{\"email\":\"" + school.getEmail() + "\",\"phonenumber\":\"" + school.getPhoneNumber() + "\",\"name\":\"" + school.getName() + "\"},"
+                + "\"customer\":{\"email\":\"" + payerDetailsDto.getEmail() + "\",\"phonenumber\":\"" + payerDetailsDto.getPhoneNumber() + "\",\"name\":\"" + payerDetailsDto.getName() + "\"},"
                 + "\"customizations\":{\"title\":\"School Payment\",\"description\":\"Payment for school fees\"}"
                 + "}";
 
@@ -60,6 +60,7 @@ public class FlutterWaveService {
         }
     }
 
+
     public ResponseEntity<Object> handlePaymentCallback(Map<String, Object> paymentData) {
         String status = (String) paymentData.get("status");
         if ("successful".equalsIgnoreCase(status)) {
@@ -79,6 +80,8 @@ public class FlutterWaveService {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse("Error", "Payment not successful"));
         }
+
+
     }
 
     private Map<String, Object> errorResponse(String status, String message) {
@@ -103,5 +106,26 @@ public class FlutterWaveService {
         response.put("data", data);
 
         return response;
+    }
+
+    public ResponseEntity<Object> verifyTransaction(String transactionId) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(flutterWaveConfig.getApiUrl() + "/transactions/" + transactionId + "/verify")
+                .get()
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer " + flutterWaveConfig.getApiKey())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body().string();
+            if (!response.isSuccessful()) {
+                return ResponseEntity.status(response.code()).body(errorResponse("Error", "Transaction verification failed: " + responseBody));
+            }
+            return ResponseEntity.ok(responseBody);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse("Error", "Transaction verification failed: " + e.getMessage()));
+        }
     }
 }
