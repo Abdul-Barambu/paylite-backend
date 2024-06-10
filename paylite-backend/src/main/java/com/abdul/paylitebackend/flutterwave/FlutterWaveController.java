@@ -23,7 +23,9 @@ public class FlutterWaveController {
     }
 
     @PostMapping("/callback")
-    public ResponseEntity<Object> handlePaymentCallback(@RequestBody Map<String, Object> paymentData) {
+    public ResponseEntity<Object> handlePaymentCallback(@RequestBody Map<String, Object> paymentData){
         return flutterwaveService.handlePaymentCallback(paymentData);
     }
+
+
 }

@@ -15,7 +15,7 @@ public class PayerDetails {
 
     @Id
     @SequenceGenerator(name = "payerDetails_sequence", sequenceName = "payerDetails_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "payerDetails_sequence")
     private Long id;
     private String name;
     private String email;
