@@ -1,4 +1,4 @@
-package com.abdul.paylitebackend.payment;
+package com.abdul.paylitebackend.flutterwave;
 
 import com.abdul.paylitebackend.flutterwave.FlutterWaveService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class PaymentVerificationController {
 
     private final FlutterWaveService flutterWaveService;

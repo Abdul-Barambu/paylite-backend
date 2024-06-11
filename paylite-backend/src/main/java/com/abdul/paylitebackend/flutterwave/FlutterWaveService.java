@@ -1,6 +1,8 @@
 package com.abdul.paylitebackend.flutterwave;
 
 import com.abdul.paylitebackend.config.FlutterWaveConfig;
+import com.abdul.paylitebackend.flutterwave.ProcessedTransactions.ProcessedTransaction;
+import com.abdul.paylitebackend.flutterwave.ProcessedTransactions.ProcessedTransactionRepository;
 import com.abdul.paylitebackend.payer.Dto.PayerDetailsDto;
 import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.entity.Wallet;
@@ -15,8 +17,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 @Service
@@ -26,7 +26,7 @@ public class FlutterWaveService {
     private final FlutterWaveConfig flutterWaveConfig;
     private final SchoolRepository schoolRepository;
     private final WalletRepository walletRepository;
-    private static final Logger log = LoggerFactory.getLogger(FlutterWaveService.class);
+    private final ProcessedTransactionRepository processedTransactionRepository;
 
     public ResponseEntity<Object> initiatePayment(Long schoolId, PayerDetailsDto payerDetailsDto) {
         Schools school = schoolRepository.findById(schoolId).orElse(null);
@@ -36,6 +36,7 @@ public class FlutterWaveService {
 
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
+//        desc of your payment, details it entails
         String json = "{"
                 + "\"tx_ref\":\"" + System.currentTimeMillis() + "\","
                 + "\"amount\":\"" + payerDetailsDto.getAmount() + "\","
@@ -43,10 +44,11 @@ public class FlutterWaveService {
                 + "\"redirect_url\":\"http://localhost:3000/callback\","
                 + "\"payment_options\":\"card\","
                 + "\"customer\":{\"email\":\"" + payerDetailsDto.getEmail() + "\",\"phonenumber\":\"" + payerDetailsDto.getPhoneNumber() + "\",\"name\":\"" + payerDetailsDto.getName() + "\"},"
-                + "\"customizations\":{\"title\":\"School Payment\",\"description\":\"Payment for school fees\"},"
+                + "\"customizations\":{\"title\":\"" + payerDetailsDto.getService() + " payment\",\"description\":\"Payment for school fees\"},"
                 + "\"meta\":{\"school_id\":\"" + schoolId + "\"}"
                 + "}";
 
+//        your request body, what you will send as request (your payment url)
         RequestBody body = RequestBody.create(json, mediaType);
         Request request = new Request.Builder()
                 .url(flutterWaveConfig.getApiUrl() + "/payments")
@@ -55,10 +57,16 @@ public class FlutterWaveService {
                 .addHeader("Authorization", "Bearer " + flutterWaveConfig.getApiKey())
                 .build();
 
+//        your response after executing the payment url
         try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-            String responseBody = response.body().string();
-            return ResponseEntity.ok(responseBody);
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            } else {
+//                your response if successful
+                String responseBody = response.body().string();
+
+                return ResponseEntity.ok(responseBody);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse("Error", "Payment initiation failed"));
@@ -75,6 +83,11 @@ public class FlutterWaveService {
         // Extract metadata and get school ID
         Map<String, Object> meta = (Map<String, Object>) paymentData.get("meta");
         Long schoolId = Long.valueOf((String) meta.get("school_id"));
+
+
+        if (processedTransactionRepository.existsByTxRef(txRef)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse("Error", "This transaction has already been processed."));
+        }
 
         // Check if the payment was successful
         if ("successful".equalsIgnoreCase(status)) {
@@ -96,6 +109,9 @@ public class FlutterWaveService {
             wallet.setBalance(wallet.getBalance() + amount);
             walletRepository.save(wallet);
 
+            // Mark the transaction as processed and save it
+            processedTransactionRepository.save(new ProcessedTransaction(txRef));
+
             // Return a success response
             return ResponseEntity.ok(successResponse("Success", "Payment successful and wallet updated"));
         } else {
@@ -104,8 +120,31 @@ public class FlutterWaveService {
         }
     }
 
+    //verify transaction
+    public ResponseEntity<Object> verifyTransaction(String transactionId) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(flutterWaveConfig.getApiUrl() + "/transactions/" + transactionId + "/verify")
+                .get()
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer " + flutterWaveConfig.getApiKey())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body().string();
+            if (!response.isSuccessful()) {
+                return ResponseEntity.status(response.code()).body(errorResponse("Error", "Transaction verification failed: " + responseBody));
+            }
+
+            return ResponseEntity.ok(responseBody);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse("Error", "Transaction verification failed: " + e.getMessage()));
+        }
+    }
+
     // Helper method to generate an error response
-       private Map<String, Object> errorResponse(String status, String message) {
+    private Map<String, Object> errorResponse(String status, String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("error", status);
 
@@ -129,24 +168,5 @@ public class FlutterWaveService {
         return response;
     }
 
-    public ResponseEntity<Object> verifyTransaction(String transactionId) {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(flutterWaveConfig.getApiUrl() + "/transactions/" + transactionId + "/verify")
-                .get()
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Bearer " + flutterWaveConfig.getApiKey())
-                .build();
 
-        try (Response response = client.newCall(request).execute()) {
-            String responseBody = response.body().string();
-            if (!response.isSuccessful()) {
-                return ResponseEntity.status(response.code()).body(errorResponse("Error", "Transaction verification failed: " + responseBody));
-            }
-            return ResponseEntity.ok(responseBody);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse("Error", "Transaction verification failed: " + e.getMessage()));
-        }
-    }
 }
