@@ -27,7 +27,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/register/schools/**").permitAll()
                         .requestMatchers("/api/payments/**").permitAll()
                         .requestMatchers("/api/verify-payment").permitAll()
-                        .requestMatchers("/api/payer/**").permitAll())
+                        .requestMatchers("/api/payer/**").permitAll()
+                        .requestMatchers("/api/v1/verify-school").permitAll())
                 .authenticationProvider(daoAuthenticationProvider());
 
         return http.build();

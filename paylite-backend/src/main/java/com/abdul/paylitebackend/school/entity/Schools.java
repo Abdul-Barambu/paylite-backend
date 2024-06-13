@@ -43,7 +43,7 @@ public class Schools implements UserDetails {
     private byte[] logo;
     @Lob
     private byte[] documents;
-    private boolean enabled = true;
+    private boolean enabled = false;
     private boolean locked = false;
     @Enumerated(EnumType.STRING)
     private SchoolRole schoolRole;

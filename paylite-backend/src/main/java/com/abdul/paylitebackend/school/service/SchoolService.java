@@ -1,8 +1,10 @@
 package com.abdul.paylitebackend.school.service;
 
 import com.abdul.paylitebackend.school.dto.UpdateSchoolDto;
+import com.abdul.paylitebackend.school.entity.AccountVerification;
 import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.entity.Wallet;
+import com.abdul.paylitebackend.school.repository.AccountVerificationRepository;
 import com.abdul.paylitebackend.school.repository.SchoolRepository;
 import com.abdul.paylitebackend.school.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +16,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +25,8 @@ public class SchoolService implements UserDetailsService {
 
     private final SchoolRepository schoolRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final WalletService walletService;
     private final WalletRepository walletRepository;
+    private final AccountVerificationRepository accountVerificationRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -44,19 +44,27 @@ public class SchoolService implements UserDetailsService {
 
         schoolRepository.save(schools);
 
-//        wallet
-        Wallet wallet = new Wallet(
-                schools,
-                0.00
+//        verification token
+        String verificationToken = UUID.randomUUID().toString();
+        AccountVerification accountVerification = new AccountVerification(
+                verificationToken,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(10),
+                schools
         );
 
-        walletService.saveWallet(wallet);
+        accountVerificationRepository.save(accountVerification);
 
-        return ResponseEntity.ok(registrationSuccessful("success", "Your registration has been successfully"));
+        return ResponseEntity.ok(registrationSuccessful("success", "Your registration has been successfully, Please verify your account" +
+                " using the url http://localhost:8080/api/v1/verify-school?verifyAccount=" + verificationToken));
     }
 
     public List<Schools> getAllSchools() {
         return schoolRepository.findAll();
+    }
+
+    public int enableSchool(String email) {
+        return schoolRepository.enabledSchool(email);
     }
 
     public ResponseEntity<Object> updateSchool(Long id, UpdateSchoolDto updateSchoolDto) {
@@ -110,8 +118,12 @@ public class SchoolService implements UserDetailsService {
         Optional<Wallet> wallet = walletRepository.findById(school.getId());
         wallet.ifPresent(walletRepository::delete);
 
+//        delete token verification table with instance id from school table
+        Optional<AccountVerification> accountVerification = accountVerificationRepository.findById(school.getId());
+        accountVerification.ifPresent(accountVerificationRepository::delete);
+
         schoolRepository.delete(school);
-        return ResponseEntity.ok(registrationSuccessful("Success", "School updated successfully"));
+        return ResponseEntity.ok(registrationSuccessful("Success", "School Deleted successfully"));
 
     }
 
