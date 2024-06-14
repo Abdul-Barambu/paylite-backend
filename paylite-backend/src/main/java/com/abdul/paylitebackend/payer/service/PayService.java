@@ -19,7 +19,8 @@ public class PayService {
                         payerDetailsDto.getEmail(),
                         payerDetailsDto.getPhoneNumber(),
                         payerDetailsDto.getAmount(),
-                        payerDetailsDto.getService()
+                        payerDetailsDto.getService(),
+                        payerDetailsDto.getSchool_id()
                 )
         );
     }

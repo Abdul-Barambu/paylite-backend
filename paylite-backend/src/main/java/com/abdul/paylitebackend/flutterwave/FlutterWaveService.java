@@ -4,8 +4,10 @@ import com.abdul.paylitebackend.config.FlutterWaveConfig;
 import com.abdul.paylitebackend.flutterwave.ProcessedTransactions.ProcessedTransaction;
 import com.abdul.paylitebackend.flutterwave.ProcessedTransactions.ProcessedTransactionRepository;
 import com.abdul.paylitebackend.payer.Dto.PayerDetailsDto;
+import com.abdul.paylitebackend.school.entity.NumberOfSuccessfulTransactions;
 import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.entity.Wallet;
+import com.abdul.paylitebackend.school.repository.NumberOfSuccessfulTransactionsRepository;
 import com.abdul.paylitebackend.school.repository.SchoolRepository;
 import com.abdul.paylitebackend.school.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -27,6 +30,7 @@ public class FlutterWaveService {
     private final SchoolRepository schoolRepository;
     private final WalletRepository walletRepository;
     private final ProcessedTransactionRepository processedTransactionRepository;
+    private final NumberOfSuccessfulTransactionsRepository numberOfSuccessfulTransactionsRepository;
 
     public ResponseEntity<Object> initiatePayment(Long schoolId, PayerDetailsDto payerDetailsDto) {
         Schools school = schoolRepository.findById(schoolId).orElse(null);
@@ -112,6 +116,14 @@ public class FlutterWaveService {
             // Mark the transaction as processed and save it
             processedTransactionRepository.save(new ProcessedTransaction(txRef));
 
+
+            // Update the number of successful transactions for the school
+            NumberOfSuccessfulTransactions transactionRecord = numberOfSuccessfulTransactionsRepository.findBySchoolsId(schoolId)
+                    .orElse(new NumberOfSuccessfulTransactions(0L, "0", school));
+            int updatedNumberOfTransactions = Integer.parseInt(transactionRecord.getNumberOfTransactions()) + 1;
+            transactionRecord.setNumberOfTransactions(String.valueOf(updatedNumberOfTransactions));
+            numberOfSuccessfulTransactionsRepository.save(transactionRecord);
+
             // Return a success response
             return ResponseEntity.ok(successResponse("Success", "Payment successful and wallet updated"));
         } else {
@@ -141,6 +153,11 @@ public class FlutterWaveService {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse("Error", "Transaction verification failed: " + e.getMessage()));
         }
+    }
+
+//    number successful transactions
+    public List<NumberOfSuccessfulTransactions> getAllTransactions(){
+        return numberOfSuccessfulTransactionsRepository.findAll();
     }
 
     // Helper method to generate an error response

@@ -2,10 +2,12 @@ package com.abdul.paylitebackend.flutterwave;
 
 import com.abdul.paylitebackend.payer.Dto.PayerDetailsDto;
 import com.abdul.paylitebackend.payer.service.PayService;
+import com.abdul.paylitebackend.school.entity.NumberOfSuccessfulTransactions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,6 +27,11 @@ public class FlutterWaveController {
     @PostMapping("/callback")
     public ResponseEntity<Object> handlePaymentCallback(@RequestBody Map<String, Object> paymentData){
         return flutterwaveService.handlePaymentCallback(paymentData);
+    }
+
+    @GetMapping(path = "/getNumberOfTransactions")
+    public List<NumberOfSuccessfulTransactions> getAllTransactions(){
+        return flutterwaveService.getAllTransactions();
     }
 
 

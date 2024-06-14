@@ -10,4 +10,5 @@ public class PayerDetailsDto {
     private String phoneNumber;
     private Integer amount;
     private String service;
+    private Long school_id;
 }

@@ -22,12 +22,14 @@ public class PayerDetails {
     private String phoneNumber;
     private Integer amount;
     private String service;
+    private Long school_id;
 
-    public PayerDetails(String name, String email, String phoneNumber, Integer amount, String service) {
+    public PayerDetails(String name, String email, String phoneNumber, Integer amount, String service, Long school_id) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.amount = amount;
         this.service = service;
+        this.school_id = school_id;
     }
 }
