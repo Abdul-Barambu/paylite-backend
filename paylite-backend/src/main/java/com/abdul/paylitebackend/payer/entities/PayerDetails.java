@@ -23,13 +23,15 @@ public class PayerDetails {
     private Integer amount;
     private String service;
     private Long school_id;
+    private String referenceNumber;
 
-    public PayerDetails(String name, String email, String phoneNumber, Integer amount, String service, Long school_id) {
+    public PayerDetails(String name, String email, String phoneNumber, Integer amount, String service, Long school_id, String referenceNumber) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.amount = amount;
         this.service = service;
         this.school_id = school_id;
+        this.referenceNumber = referenceNumber;
     }
 }

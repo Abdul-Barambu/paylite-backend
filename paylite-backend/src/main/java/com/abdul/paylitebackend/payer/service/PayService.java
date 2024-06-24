@@ -20,7 +20,8 @@ public class PayService {
                         payerDetailsDto.getPhoneNumber(),
                         payerDetailsDto.getAmount(),
                         payerDetailsDto.getService(),
-                        payerDetailsDto.getSchool_id()
+                        payerDetailsDto.getSchool_id(),
+                        null // Reference number will be generated in the service layer
                 )
         );
     }
