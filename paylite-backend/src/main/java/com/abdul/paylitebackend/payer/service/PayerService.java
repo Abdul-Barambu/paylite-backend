@@ -26,6 +26,8 @@ public class PayerService {
         return payerRepository.findAll();
     }
 
+//    TODO: create a reference number for each payment as a unique field
+
     public Map<String, Object> registrationSuccessful(String status, String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", status);

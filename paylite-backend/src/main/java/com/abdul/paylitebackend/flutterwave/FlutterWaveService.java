@@ -160,6 +160,22 @@ public class FlutterWaveService {
         return numberOfSuccessfulTransactionsRepository.findAll();
     }
 
+//    number of transaction by school id
+    public NumberOfSuccessfulTransactions findById(Long school_id){
+        NumberOfSuccessfulTransactions numberOfSuccessfulTransactions = numberOfSuccessfulTransactionsRepository.findById(school_id).get();
+        return numberOfSuccessfulTransactions;
+    }
+
+//    wallet balance by school id
+    public Wallet displayBalance(Long school_id){
+        Wallet wallet = walletRepository.findById(school_id).get();
+        return wallet;
+    }
+
+
+
+
+
     // Helper method to generate an error response
     private Map<String, Object> errorResponse(String status, String message) {
         Map<String, Object> response = new HashMap<>();
