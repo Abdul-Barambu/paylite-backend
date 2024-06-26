@@ -29,6 +29,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        final String requestURI = request.getRequestURI();
+        // Skip filtering for the endpoints configured with permitAll
+        if (requestURI.equals("/api/register/schools/addSchool") ||
+                requestURI.equals("/api/v1/login") ||
+                requestURI.equals("/api/register/schools/update/{id}") ||
+                requestURI.startsWith("/api/payments") ||
+                requestURI.equals("/api/payer") ||
+                requestURI.equals("/api/v1/verify-school")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;

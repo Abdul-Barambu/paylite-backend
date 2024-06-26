@@ -1,6 +1,7 @@
 package com.abdul.paylitebackend.config;
 
 import com.abdul.paylitebackend.jwt.JwtAuthenticationFilter;
+import com.abdul.paylitebackend.school.entity.SchoolRole;
 import com.abdul.paylitebackend.school.service.SchoolService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -30,12 +31,16 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/register/schools/**").permitAll()
+                        .requestMatchers("/api/register/schools/addSchool").permitAll()
+                        .requestMatchers("/api/register/schools/getAllSchools").hasAnyAuthority(SchoolRole.ADMIN.name())
+                        .requestMatchers("/api/register/schools/update/{id}").permitAll()
+                        .requestMatchers("/api/register/schools/delete/{id}").hasAuthority(SchoolRole.ADMIN.name())
                         .requestMatchers("/api/v1/login").permitAll()
                         .requestMatchers("/api/payments/**").permitAll()
-                        .requestMatchers("/api/verify-payment").permitAll()
+                        .requestMatchers("/api/verify-payment").hasAuthority(SchoolRole.SCHOOL.name())
                         .requestMatchers("/api/payer/**").permitAll()
-                        .requestMatchers("/api/v1/verify-school").permitAll())
+                        .requestMatchers("/api/v1/verify-school").permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -20,7 +20,7 @@ public class SchoolController {
     private final SchoolService schoolService;
 
 
-    @PostMapping(path = "addSchool")
+    @PostMapping(path = "/addSchool")
     public ResponseEntity<Object> registerSchool(@RequestBody SchoolDto schoolDto){
         return schoolRegistration.registerSchool(schoolDto);
     }
