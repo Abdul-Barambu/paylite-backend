@@ -2,9 +2,11 @@ package com.abdul.paylitebackend.school.service;
 
 import com.abdul.paylitebackend.school.dto.UpdateSchoolDto;
 import com.abdul.paylitebackend.school.entity.AccountVerification;
+import com.abdul.paylitebackend.school.entity.NumberOfSuccessfulTransactions;
 import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.entity.Wallet;
 import com.abdul.paylitebackend.school.repository.AccountVerificationRepository;
+import com.abdul.paylitebackend.school.repository.NumberOfSuccessfulTransactionsRepository;
 import com.abdul.paylitebackend.school.repository.SchoolRepository;
 import com.abdul.paylitebackend.school.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class SchoolService implements UserDetailsService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final WalletRepository walletRepository;
     private final AccountVerificationRepository accountVerificationRepository;
+    private final NumberOfSuccessfulTransactionsRepository numberOfSuccessfulTransactionsRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -121,6 +124,9 @@ public class SchoolService implements UserDetailsService {
 //        delete token verification table with instance id from school table
         Optional<AccountVerification> accountVerification = accountVerificationRepository.findById(school.getId());
         accountVerification.ifPresent(accountVerificationRepository::delete);
+
+        Optional<NumberOfSuccessfulTransactions> numberOfSuccessfulTransactions = numberOfSuccessfulTransactionsRepository.findById(school.getId());
+        numberOfSuccessfulTransactions.ifPresent(numberOfSuccessfulTransactionsRepository::delete);
 
         schoolRepository.delete(school);
         return ResponseEntity.ok(registrationSuccessful("Success", "School Deleted successfully"));

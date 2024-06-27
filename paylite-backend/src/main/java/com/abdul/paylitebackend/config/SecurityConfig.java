@@ -33,8 +33,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/register/schools/addSchool").permitAll()
                         .requestMatchers("/api/register/schools/getAllSchools").hasAnyAuthority(SchoolRole.ADMIN.name())
-                        .requestMatchers("/api/register/schools/update/{id}").permitAll()
-                        .requestMatchers("/api/register/schools/delete/{id}").hasAuthority(SchoolRole.ADMIN.name())
+                        .requestMatchers("/api/register/schools/updateSchool/{id}").hasAnyAuthority(SchoolRole.SCHOOL.name())
+                        .requestMatchers("/api/register/schools/deleteSchool/{id}").hasAnyAuthority(SchoolRole.ADMIN.name())
                         .requestMatchers("/api/v1/login").permitAll()
                         .requestMatchers("/api/payments/**").permitAll()
                         .requestMatchers("/api/verify-payment").hasAuthority(SchoolRole.SCHOOL.name())

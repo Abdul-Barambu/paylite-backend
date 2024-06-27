@@ -11,6 +11,6 @@ public class UpdateSchoolDto {
     private String bankName;
     private String accountName;
     private String accountNumber;
-    private byte[] logo;
-    private byte[] documents;
+    private String logo;
+    private String documents;
 }

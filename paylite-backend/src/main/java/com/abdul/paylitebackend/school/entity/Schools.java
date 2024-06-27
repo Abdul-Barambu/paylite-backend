@@ -39,10 +39,8 @@ public class Schools implements UserDetails {
     private String bankName;
     private String accountName;
     private String accountNumber;
-    @Lob
-    private byte[] logo;
-    @Lob
-    private byte[] documents;
+    private String logo;
+    private String documents;
     private boolean enabled = false;
     private boolean locked = false;
     @Enumerated(EnumType.STRING)
