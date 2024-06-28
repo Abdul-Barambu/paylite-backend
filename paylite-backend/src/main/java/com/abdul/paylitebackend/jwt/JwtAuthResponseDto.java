@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class JwtAuthResponseDto {
-    private String jwtToken;
+    private Long schoolId;
+    private String schoolName;
+    private String accessToken;
     private String refreshToken;
 }

@@ -1,6 +1,7 @@
 package com.abdul.paylitebackend.jwt;
 
 import com.abdul.paylitebackend.school.dto.LoginRequest;
+import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.repository.SchoolRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,9 @@ public class JwtAuthService {
 
         JwtAuthResponseDto jwtAuthResponseDto = new JwtAuthResponseDto();
 
-        jwtAuthResponseDto.setJwtToken(jwt);
+        jwtAuthResponseDto.setSchoolId(user.getId());
+        jwtAuthResponseDto.setSchoolName(user.getName());
+        jwtAuthResponseDto.setAccessToken(jwt);
         jwtAuthResponseDto.setRefreshToken(refreshToken);
 
         return jwtAuthResponseDto;
