@@ -1,5 +1,6 @@
 package com.abdul.paylitebackend.school.service;
 
+import com.abdul.paylitebackend.school.dto.ChangePasswordDto;
 import com.abdul.paylitebackend.school.dto.UpdateSchoolDto;
 import com.abdul.paylitebackend.school.entity.AccountVerification;
 import com.abdul.paylitebackend.school.entity.NumberOfSuccessfulTransactions;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ public class SchoolService implements UserDetailsService {
     private final WalletRepository walletRepository;
     private final AccountVerificationRepository accountVerificationRepository;
     private final NumberOfSuccessfulTransactionsRepository numberOfSuccessfulTransactionsRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -132,6 +135,32 @@ public class SchoolService implements UserDetailsService {
         return ResponseEntity.ok(registrationSuccessful("Success", "School Deleted successfully"));
 
     }
+
+//    change password
+public ResponseEntity<Object> changePassword(ChangePasswordDto changePasswordDto) {
+    Optional<Schools> schoolsOptional = schoolRepository.findByEmail(changePasswordDto.getEmail());
+    System.out.println(changePasswordDto.getEmail());
+    System.out.println(changePasswordDto.getOldPassword());
+    System.out.println(changePasswordDto.getNewPassword());
+
+    if (schoolsOptional.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(emailExist("Error", "School Not Found with email "+changePasswordDto.getEmail()));
+    }
+
+    Schools school = schoolsOptional.get();
+
+    if (!bCryptPasswordEncoder.matches(changePasswordDto.getOldPassword(), school.getPassword())) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(emailExist("Error", "Old password is incorrect"));
+    }
+
+    String newPasswordEncoded = bCryptPasswordEncoder.encode(changePasswordDto.getNewPassword());
+    school.setPassword(newPasswordEncoded);
+
+    schoolRepository.save(school);
+
+    return ResponseEntity.ok(registrationSuccessful("Success", "Password changed successfully"));
+}
+
 
     //    Response
     public Map<String, Object> emailExist(String status, String message) {

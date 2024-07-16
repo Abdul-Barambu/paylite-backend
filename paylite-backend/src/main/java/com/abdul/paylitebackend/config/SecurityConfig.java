@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/register/schools/getAllSchools").hasAnyAuthority(SchoolRole.ADMIN.name())
                         .requestMatchers("/api/register/schools/updateSchool/{id}").hasAnyAuthority(SchoolRole.SCHOOL.name())
                         .requestMatchers("/api/register/schools/deleteSchool/{id}").hasAnyAuthority(SchoolRole.ADMIN.name())
+                        .requestMatchers("/api/register/schools/changePassword").permitAll()
                         .requestMatchers("/api/v1/login").permitAll()
                         .requestMatchers("/api/payments/**").permitAll()
                         .requestMatchers("/api/verify-payment").hasAuthority(SchoolRole.SCHOOL.name())

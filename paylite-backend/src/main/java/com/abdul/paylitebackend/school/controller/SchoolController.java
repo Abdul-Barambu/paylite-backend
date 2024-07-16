@@ -1,5 +1,6 @@
 package com.abdul.paylitebackend.school.controller;
 
+import com.abdul.paylitebackend.school.dto.ChangePasswordDto;
 import com.abdul.paylitebackend.school.dto.SchoolDto;
 import com.abdul.paylitebackend.school.dto.UpdateSchoolDto;
 import com.abdul.paylitebackend.school.entity.Schools;
@@ -38,6 +39,11 @@ public class SchoolController {
     @DeleteMapping(path = "/deleteSchool/{id}")
     public ResponseEntity deleteSchool(@PathVariable Long id){
         return schoolService.deleteSchool(id);
+    }
+
+    @PostMapping(path = "/changePassword")
+    public ResponseEntity changePassword(@RequestBody ChangePasswordDto changePasswordDto){
+        return schoolService.changePassword(changePasswordDto);
     }
 
 }

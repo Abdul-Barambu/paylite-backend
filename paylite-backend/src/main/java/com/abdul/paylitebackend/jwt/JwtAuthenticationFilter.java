@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String requestURI = request.getRequestURI();
         // Skip filtering for the endpoints configured with permitAll
         if (requestURI.equals("/api/register/schools/addSchool") ||
+                requestURI.equals("/api/register/schools/changePassword") ||
                 requestURI.equals("/api/v1/login") ||
                 requestURI.startsWith("/api/payments") ||
                 requestURI.equals("/api/payer") ||
