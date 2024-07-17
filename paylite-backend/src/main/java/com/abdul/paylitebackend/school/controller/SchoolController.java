@@ -1,9 +1,11 @@
 package com.abdul.paylitebackend.school.controller;
 
 import com.abdul.paylitebackend.school.dto.ChangePasswordDto;
+import com.abdul.paylitebackend.school.dto.ForgotPasswordEmailDto;
 import com.abdul.paylitebackend.school.dto.SchoolDto;
 import com.abdul.paylitebackend.school.dto.UpdateSchoolDto;
 import com.abdul.paylitebackend.school.entity.Schools;
+import com.abdul.paylitebackend.school.service.ForgotPasswordService;
 import com.abdul.paylitebackend.school.service.SchoolRegistration;
 import com.abdul.paylitebackend.school.service.SchoolService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class SchoolController {
 
     private final SchoolRegistration schoolRegistration;
     private final SchoolService schoolService;
+    private final ForgotPasswordService forgotPasswordService;
 
 
     @PostMapping(path = "/addSchool")
@@ -44,6 +47,11 @@ public class SchoolController {
     @PostMapping(path = "/changePassword")
     public ResponseEntity changePassword(@RequestBody ChangePasswordDto changePasswordDto){
         return schoolService.changePassword(changePasswordDto);
+    }
+
+    @PostMapping(path = "/forgot-password")
+    public String randomNumber(@RequestBody ForgotPasswordEmailDto forgotPasswordEmailDto){
+        return forgotPasswordService.generateOtpNumber(forgotPasswordEmailDto);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.abdul.paylitebackend.emailVal;
+package com.abdul.paylitebackend.email.emailVal;
 
 import org.springframework.stereotype.Service;
 

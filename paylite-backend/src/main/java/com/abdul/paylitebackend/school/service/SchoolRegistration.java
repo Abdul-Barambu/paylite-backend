@@ -1,13 +1,11 @@
 package com.abdul.paylitebackend.school.service;
 
-import com.abdul.paylitebackend.emailVal.EmailValidator;
+import com.abdul.paylitebackend.email.emailVal.EmailValidator;
 import com.abdul.paylitebackend.school.dto.SchoolDto;
 import com.abdul.paylitebackend.school.entity.AccountVerification;
 import com.abdul.paylitebackend.school.entity.SchoolRole;
 import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.entity.Wallet;
-import com.abdul.paylitebackend.school.repository.AccountVerificationRepository;
-import com.abdul.paylitebackend.school.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
