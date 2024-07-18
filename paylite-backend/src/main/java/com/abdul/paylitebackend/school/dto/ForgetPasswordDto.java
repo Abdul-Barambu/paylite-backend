@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class ForgetPasswordDto {
-    private Long id;
     private String otp;
     private String newPassword;
     private String confirmPassword;

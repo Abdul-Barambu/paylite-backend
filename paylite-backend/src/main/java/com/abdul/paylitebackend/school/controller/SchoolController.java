@@ -1,9 +1,6 @@
 package com.abdul.paylitebackend.school.controller;
 
-import com.abdul.paylitebackend.school.dto.ChangePasswordDto;
-import com.abdul.paylitebackend.school.dto.ForgotPasswordEmailDto;
-import com.abdul.paylitebackend.school.dto.SchoolDto;
-import com.abdul.paylitebackend.school.dto.UpdateSchoolDto;
+import com.abdul.paylitebackend.school.dto.*;
 import com.abdul.paylitebackend.school.entity.Schools;
 import com.abdul.paylitebackend.school.service.ForgotPasswordService;
 import com.abdul.paylitebackend.school.service.SchoolRegistration;
@@ -52,6 +49,11 @@ public class SchoolController {
     @PostMapping(path = "/forgot-password")
     public String randomNumber(@RequestBody ForgotPasswordEmailDto forgotPasswordEmailDto){
         return forgotPasswordService.generateOtpNumber(forgotPasswordEmailDto);
+    }
+
+    @PutMapping(path = "/forgot-password/{id}")
+    public String forgotPassword(@PathVariable Long id, @RequestBody ForgetPasswordDto forgetPasswordDto){
+        return forgotPasswordService.forgotPassword(id, forgetPasswordDto);
     }
 
 }
